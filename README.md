@@ -1,5 +1,5 @@
 # monadtransformers-example
-Example code for StateT, ReaderT, and ExceptT usage
+StateT, ReaderT, and ExceptT usage example
 
 Primarily for the following pattern:
 `Env -> State -> IO (Either Error a)`
