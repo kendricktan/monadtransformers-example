@@ -21,7 +21,7 @@ data MyState = MyState
   , stateInt :: Int
   } deriving Show
 
-data MyError = ErrorNumberOne
+data MyError = ErrorNumberOne Int
              | ErrorNumberTwo
              | UnknownError
              deriving Show
@@ -93,14 +93,14 @@ envReadStateUpdate i = do
 
 -- Exception handling
 errorHandler :: MyError -> MyMonad ()
-errorHandler ErrorNumberOne = modify (\s -> s { stateInt = 1 })
+errorHandler (ErrorNumberOne i) = modify (\s -> s { stateInt = i })
 errorHandler ErrorNumberTwo = modify (\s -> s { stateInt = 2 })
 errorHandler UnknownError   = modify (\s -> s { stateInt = -1 })
 
 logicHandler :: Int -> MyMonad ()
 logicHandler i = case i `rem` 3 of
                   0 -> liftIO (putStrLn "Divisible by 3!") >> return ()
-                  1 -> throwError ErrorNumberOne
+                  1 -> throwError $ ErrorNumberOne i
                   2 -> throwError ErrorNumberTwo
                   _ -> throwError UnknownError
 
@@ -125,7 +125,7 @@ main = do
   _ <- runMyMonad initialEnvironment initialState printStateValue
   putStrLn "\n\n3. Updates state value to 16 (since it's an even number)"
   _ <- runMyMonad initialEnvironment initialState (envReadStateUpdate 16)
-  putStrLn "\n\n4. Updates state value to whatever reader Int is (since it's an odd number)"
+  putStrLn "\n\n4. Updates state value to whatever envInt is (since it's an odd number)"
   _ <- runMyMonad initialEnvironment initialState (envReadStateUpdate 3)
   putStrLn "\n\n5. Exception handling"
   _ <- runMyMonad initialEnvironment initialState (handleExceptions [2..5])
